@@ -11,10 +11,10 @@ const handleUser = (user, res) => {
 };
 
 const handleErrors = (err, res) => {
-  if (err.name === 'ValidationError') {
+  if (err.name === 'ValidationError' || err.name === 'CastError') {
     res.status(VALIDATION_ERROR).send({ message: `Ошибка в параметрах запроса ${err.message}` });
   } else {
-    res.status(DEFAULT_ERROR).send({ message: `Упс, что-то пошло не так, обратитесь к администраторам ${err.message}` });
+    res.status(DEFAULT_ERROR).send({ message: `Упс, что-то пошло не так, обратитесь к администраторам ${err}` });
   }
 };
 

@@ -26,7 +26,7 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use((req, res) => {
-  res.status(NOT_FOUND).send('Запрашиваемый роут не найден');
+  res.status(NOT_FOUND).send({ message: 'Запрашиваемый роут не найден' });
 });
 
 app.listen(PORT);
