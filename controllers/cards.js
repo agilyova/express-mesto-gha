@@ -1,19 +1,8 @@
 const Card = require('../models/card');
-
-const NOT_FOUND = 404;
-const VALIDATION_ERROR = 400;
-const DEFAULT_ERROR = 500;
+const { NOT_FOUND, handleErrors } = require('../utils/utils');
 
 const handleCardNotFound = (res) => {
   res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
-};
-
-const handleErrors = (err, res) => {
-  if (err.name === 'ValidationError' || err.name === 'CastError') {
-    res.status(VALIDATION_ERROR).send({ message: `Ошибка в параметрах запроса ${err.message}` });
-  } else {
-    res.status(DEFAULT_ERROR).send({ message: `Упс, что-то пошло не так, обратитесь к администраторам ${err.message}` });
-  }
 };
 
 module.exports.getCards = (req, res) => {
@@ -27,7 +16,7 @@ module.exports.createCard = (req, res) => {
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.status(201).send({ data: card }))
     .catch((err) => { handleErrors(err, res); });
 };
 
