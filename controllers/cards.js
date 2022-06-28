@@ -1,38 +1,41 @@
 const Card = require('../models/card');
-const { NOT_FOUND, handleErrors } = require('../utils/utils');
+const NotFoundError = require('../errors/not-found-err');
+const ForbiddenError = require('../errors/forbidden-err');
 
-const handleCardNotFound = (res) => {
-  res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
+const handleCardNotFound = () => {
+  throw new NotFoundError('Карточка не найдена');
 };
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => { handleErrors(err, res); });
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
     .then((card) => res.status(201).send({ data: card }))
-    .catch((err) => { handleErrors(err, res); });
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      if (card) {
-        res.send({ message: 'Карточка успешно удалена' });
-      } else {
-        handleCardNotFound(res);
+      if (!card) {
+        handleCardNotFound();
       }
+      if (req.user._id !== card.owner.toString()) {
+        throw new ForbiddenError('Нельзя удалить чужую карточку');
+      }
+      res.send({ message: 'Карточка успешно удалена' });
     })
-    .catch((err) => { handleErrors(err, res); });
+    .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -42,13 +45,13 @@ module.exports.likeCard = (req, res) => {
       if (card) {
         res.send({ data: card });
       } else {
-        handleCardNotFound(res);
+        handleCardNotFound();
       }
     })
-    .catch((err) => { handleErrors(err, res); });
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -58,8 +61,8 @@ module.exports.dislikeCard = (req, res) => {
       if (card) {
         res.send({ data: card });
       } else {
-        handleCardNotFound(res);
+        handleCardNotFound();
       }
     })
-    .catch((err) => { handleErrors(err, res); });
+    .catch(next);
 };
