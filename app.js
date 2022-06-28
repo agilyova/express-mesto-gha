@@ -28,7 +28,7 @@ app.post('/signup', celebrate({
     name: Joi.string().trim().min(2).max(30),
     about: Joi.string().trim().min(2).max(30),
     // eslint-disable-next-line prefer-regex-literals
-    avatar: Joi.string().required().pattern(new RegExp(/^((https?):\/\/)(www.)?[a-z0-9-]+\.[a-z]+[a-z0-9/\-._~:?#[\]@!$&='()*+,;]+#?$/i)),
+    avatar: Joi.string().pattern(new RegExp(/^((https?):\/\/)(www.)?[a-z0-9-]+\.[a-z]+[a-z0-9/\-._~:?#[\]@!$&='()*+,;]+#?$/i)),
   }),
 }), createUser);
 app.post('/signin', celebrate({

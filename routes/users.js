@@ -19,7 +19,8 @@ router.patch('/me', celebrate({
 }), updateUser);
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().trim().min(2),
+    // eslint-disable-next-line prefer-regex-literals
+    avatar: Joi.string().required().pattern(new RegExp(/^((https?):\/\/)(www.)?[a-z0-9-]+\.[a-z]+[a-z0-9/\-._~:?#[\]@!$&='()*+,;]+#?$/i)),
   }),
 }), updateUserAvatar);
 
