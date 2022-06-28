@@ -27,7 +27,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required().min(5),
     name: Joi.string().trim().min(2).max(30),
     about: Joi.string().trim().min(2).max(30),
-    link: Joi.string().required().uri().min(2),
+    link: Joi.string().required().pattern(new RegExp(/^((https?):\/\/)(www.)?[a-z0-9-]+\.[a-z]+[a-z0-9/\-._~:?#[\]@!$&='()*+,;]+#?$/i)),
   }),
 }), createUser);
 app.post('/signin', celebrate({
