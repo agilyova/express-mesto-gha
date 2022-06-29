@@ -3,6 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const {
   updateUser, getUsers, getUser, updateUserAvatar, getCurrentUser,
 } = require('../controllers/users');
+const { URL_REGEX } = require('../helpers/constants');
 
 router.get('/', getUsers);
 router.get('/me', getCurrentUser);
@@ -20,7 +21,7 @@ router.patch('/me', celebrate({
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
     // eslint-disable-next-line prefer-regex-literals
-    avatar: Joi.string().required().pattern(new RegExp(/^((https?):\/\/)(www.)?[a-z0-9-]+\.[a-z]+[a-z0-9/\-._~:?#[\]@!$&='()*+,;]+#?$/i)),
+    avatar: Joi.string().required().pattern(new RegExp(URL_REGEX)),
   }),
 }), updateUserAvatar);
 

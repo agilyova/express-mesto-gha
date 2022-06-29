@@ -8,6 +8,7 @@ const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/not-found-err');
 const { INTERNAL_SERVER_ERROR } = require('./errors/error-constunts');
+const { URL_REGEX } = require('./helpers/constants');
 
 const { PORT = 3000 } = process.env;
 
@@ -28,7 +29,7 @@ app.post('/signup', celebrate({
     name: Joi.string().trim().min(2).max(30),
     about: Joi.string().trim().min(2).max(30),
     // eslint-disable-next-line prefer-regex-literals
-    avatar: Joi.string().pattern(new RegExp(/^((https?):\/\/)(www.)?[a-z0-9-]+\.[a-z]+[a-z0-9/\-._~:?#[\]@!$&='()*+,;]+#?$/i)),
+    avatar: Joi.string().pattern(new RegExp(URL_REGEX)),
   }),
 }), createUser);
 app.post('/signin', celebrate({

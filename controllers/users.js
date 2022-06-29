@@ -7,6 +7,8 @@ const BadRequestError = require('../errors/bad-request-err');
 const UnauthorizedError = require('../errors/unauthorized-err');
 const ConflictError = require('../errors/conflict-err');
 
+const MONGO_DUPLICATE_ERROR_CODE = 11000;
+
 const handleUser = (user, res) => {
   if (user) {
     res.send({ data: user });
@@ -53,7 +55,7 @@ module.exports.createUser = (req, res, next) => {
       },
     }))
     .catch((err) => {
-      if (err.code === 11000) {
+      if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
         throw new ConflictError('Данный email уже занят');
       }
       /*      if (err.name === 'ValidationError' || err.name === 'CastError') {
