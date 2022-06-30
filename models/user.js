@@ -36,4 +36,13 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+userSchema.set('toJSON', {
+  transform(doc, ret) {
+    // eslint-disable-next-line no-param-reassign
+    delete ret.password;
+    // eslint-disable-next-line no-underscore-dangle,no-param-reassign
+    delete ret.__v;
+  },
+});
+
 module.exports = mongoose.model('user', userSchema);

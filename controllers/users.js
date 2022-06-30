@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
-const ForbiddenError = require('../errors/forbidden-err');
 const UnauthorizedError = require('../errors/unauthorized-err');
 const ConflictError = require('../errors/conflict-err');
 
@@ -45,20 +44,14 @@ module.exports.createUser = (req, res, next) => {
       email, password: hash, name, about, avatar,
     }))
     .then((user) => res.status(201).send({
-      data: {
-        _id: user._id,
-        email: user.email,
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-      },
+      data: user,
     }))
     .catch((err) => {
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        throw new ConflictError('Данный email уже занят');
+        next(new ConflictError('Данный email уже занят'));
+      } else {
+        next(err);
       }
-
-      next(err);
     })
     .catch(next);
 };
@@ -71,12 +64,6 @@ module.exports.updateUser = (req, res, next) => {
     runValidators: true,
   })
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь не найден');
-      }
-      if (req.user._id !== user._id.toString()) {
-        throw new ForbiddenError('Нельзя редактировать данные другого пользователя');
-      }
       handleUser(user, res);
     })
     .catch(next);
@@ -117,7 +104,7 @@ module.exports.login = (req, res, next) => {
           httpOnly: true,
           // sameSite: true,
         })
-        .send({ message: 'Вы успешно авторизовались' });
+        .send({ message: 'Вы успешно авторизованы' });
     })
     .catch(next);
 };
