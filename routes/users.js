@@ -9,13 +9,15 @@ router.get('/', getUsers);
 router.get('/me', getCurrentUser);
 router.get('/:userId', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
+    userId: Joi.string().required().alphanum().length(24),
   }),
 }), getUser);
 router.patch('/me', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().trim().min(2).max(30),
-    about: Joi.string().trim().min(2).max(30),
+    name: Joi.string().required().trim().min(2)
+      .max(30),
+    about: Joi.string().required().trim().min(2)
+      .max(30),
   }),
 }), updateUser);
 router.patch('/me/avatar', celebrate({

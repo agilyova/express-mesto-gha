@@ -44,13 +44,13 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use(errors());
-
 app.use(() => {
   throw new NotFoundError('Запрашиваемый роут не найден');
 });
 
-// eslint-disable-next-line no-unused-vars,consistent-return
+app.use(errors());
+
+// eslint-disable-next-line consistent-return
 app.use((err, req, res, next) => {
   if (err.statusCode) {
     return res.status(err.statusCode).send({ message: err.message });
@@ -58,6 +58,8 @@ app.use((err, req, res, next) => {
   // eslint-disable-next-line no-console
   console.error(err.stack);
   res.status(INTERNAL_SERVER_ERROR).send({ message: 'Что-то пошло не так' });
+
+  next();
 });
 
 app.listen(PORT);
